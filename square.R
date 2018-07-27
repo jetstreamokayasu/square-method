@@ -2,7 +2,7 @@ require(TDA)
 require(myfs)
 require(rgl)
 
-x<-torusUnif(10, 1, 2.5)
+x<-torusUnif(100, 1, 2.5)
 
 plot3d(x)
 aspect3d("iso")
@@ -18,25 +18,21 @@ aspect3d("iso")
 # par(new=T)
 # plot(x1, a[2]*x1+a[1]*x0, type="l")
 
-distance<-function(origin){
+torus.dist<-distance(x)
+
+s<-runif(100, 1, 100)
+t<-runif(100, 1, 100)
+plot3d(s, t, u<-3*s+4*t+2, col="red")
+
+get.vicinity<-function(dis, center, nvic){
   
-  dist<-matrix(0, (1/2)*nrow(origin)*(nrow(origin)-1), 2)
-  r<-1
+  choice<-rbind(dis[which(dis[, "start"]==center), ], dis[which(dis[, "goal"]==center), ])
+  choice<-choice[order(choice[,3]),]
   
-  for (k in 1:nrow(origin)) {
-    for (l in 1:nrow(origin)) {
-     #debugText(((k*l) %in% dist[,1])) 
-      if((k!=l) && !((k*l) %in% dist[,1])){
-        debugText(r, k, l, dist[,1])
-        dist[r,1]<-k*l
-        dist[r,2]<-sum((origin[k,]-origin[l,])^2)
-        r<-r+1
-        
-      }
-    }
-    
-  }
-  return(dist)
+  vic<-choice[1:nvic,]
+  
+  return(vic)
+  
 }
 
-torus.dist<-distance(x)
+vic3<-get.vicinity(torus.dist, 3, 10)
