@@ -23,7 +23,7 @@ distance<-function(origin){
   return(dist)
 }
 
-#任意の点から最も近いnvic点を求める関数
+#任意(center)の点から最も近いnvic点を求める関数
 get.vicinity<-function(dis, center, nvic){
   
   choice<-rbind(dis[which(dis[, "start"]==center), ], dis[which(dis[, "goal"]==center), ])
