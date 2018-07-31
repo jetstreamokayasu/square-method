@@ -138,3 +138,117 @@ mapping2<-function(vic, center, coe){
   return(feet)
   
 }
+#データを補間する関数
+interpolation<-function(centr, feet, coe){
+  
+  q<-rep(0, 3)
+  c<-feet[1, 2:4]
+  p<-feet[length(feet[,1]), 2:4]
+  r<-p-c
+  
+  q[1]<-feet[(length(feet3[,1])%/%2)+1, "x"]
+  
+  q[2]<-((-q[1])*(r[1]+r[3]*coe[1])+sum(r*c)-r[3]*coe[3])/(r[2]+coe[2]*r[3])
+  
+  q[3]<-coe[1]*q[1]+coe[2]*q[2]+coe[3]
+  
+  d<-sqrt(sum(r^2))
+  e1<-r/d
+  e2<-(q-c)/sqrt(sum((q-c)^2))
+  base<-cbind(e1[1:2], e2[1:2])
+  
+  mapped<-sapply(1:length(feet3[,1]), function(l){
+    
+    k<-solve(base)%*%(feet[l, 2:3]-feet[1, 2:3])
+    
+    return(c(feet[l, 1], k))
+    
+  })
+  
+  mapped<-t(mapped)
+  
+  colnames(mapped[,2:3])<-c("e1", "e2")
+  
+  plus<-c(0, 0, 0)
+  
+  for (i in 0:2){
+    
+    for (j in 0:2){
+      
+      check1<-existence(c(i*(d/3), j*(d/3)), c((i+1)*(d/3), (j+1)*(d/3)), mapped)
+      
+      if(check1){
+        
+        expand1<-c+(((i+1)*(d/3))/2)*e1+(((j+1)*(d/3))/2)*e2
+        
+        if(length(plus)>3) plus<-rbind(plus, expand1)
+        
+        else plus<-expand1
+        
+      }
+      
+      check2<-existence(c(-i*(d/3), j*(d/3)), c(-(i+1)*(d/3), (j+1)*(d/3)), mapped)
+      
+      if(check2){
+        
+        expand2<-c+((-(i+1)*(d/3))/2)*e1+(((j+1)*(d/3))/2)*e2
+        
+        if(length(plus)>3) plus<-rbind(plus, expand2)
+        
+        else plus<-expand2
+        
+      }
+      
+      check3<-existence(c(-i*(d/3), -j*(d/3)), c(-(i+1)*(d/3), -(j+1)*(d/3)), mapped)
+      
+      if(check3){
+        
+        expand3<-c+((-(i+1)*(d/3))/2)*e1+((-(j+1)*(d/3))/2)*e2
+        
+        if(length(plus)>3) plus<-rbind(plus, expand3)
+        
+        else plus<-expand3
+        
+      }
+      
+      check4<-existence(c(i*(d/3), -j*(d/3)), c((i+1)*(d/3), -(j+1)*(d/3)), mapped)
+      
+      if(check4){
+        
+        expand4<-c+(((i+1)*(d/3))/2)*e1+((-(j+1)*(d/3))/2)*e2
+        
+        if(length(plus)>3) plus<-rbind(plus, expand4)
+        
+        else plus<-expand4
+        
+      }
+      
+      
+      
+    }
+    
+  }
+  
+  return(plus)
+  
+}
+
+#start, endで区切られた範囲にデータ点が存在しするかしないかを判定する関数
+existence<-function(start, end, mapped){
+  
+  exit.e1<-length((1:length(mapped[,1]))[mapped[,2]>=start[1] & mapped[,2]<end[1]])
+  
+  if(exit.e1>=1){
+    
+    exie1.mem<-(1:length(mapped[,1]))[mapped[,2]>=start[1] & mapped[,2]<end[1]]
+    exit.e2<-length((1:length(mapped[exie1.mem, 1]))[mapped[exie1.mem, 3]>=start[2] & mapped[exie1.mem, 3]<end[2]])
+    
+    if(exit.e2>=1) return(F)
+    
+    else return(T)
+    
+  }
+  
+  else return(T)
+  
+}

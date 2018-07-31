@@ -51,26 +51,14 @@ feet3<-mapping2(vic3, 3, a3)
 points3d(feet3[-c(1, 11), 2:4], col=2)
 points3d(feet3[c(1, 11), 2:4], col="pink")
 
-interpolation<-function(centr, feet, coe){
-  
-  q<-rep(0, 3)
-  c<-feet[1, 2:4]
-  p<-feet[length(feet[,1]), 2:4]
-  r<-p-c
-  
-  q[1]<-feet[(length(feet3[,1])%/%2)+1, "x"]
-  
-  q[2]<-((-q[1])*(r[1]+r[3]*coe[1])+sum(r*c)-r[3]*coe[3])/(r[2]+coe[2]*r[3])
-  
-  q[3]<-coe[1]*q[1]+coe[2]*q[2]+coe[3]
-  
-  d<-sqrt(sum(r^2))
-  e1<-r/d
-  e2<-(q-c)/sqrt(sum((q-c)^2))
-  
-  return(q)
-  
-}
+
+
+
 
 q3<-interpolation(3, feet3, a3)
 points3d(rbind(c(0,0,0), q3), col="orange")
+
+mapped3<-interpolation(3, feet3, a3)
+
+plus3<-interpolation(3, feet3, a3)
+points3d(rbind(c(0,0,0), plus3), col="orange")
