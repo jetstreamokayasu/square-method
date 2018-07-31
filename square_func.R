@@ -132,9 +132,9 @@ mapping2<-function(vic, center, coe){
   })
   
   feet<-t(feet)
-  debugText(feet)
+  #debugText(feet)
   colnames(feet)<-c("origin", "x", "y", "z")
-  debugText(feet)
+  #debugText(feet)
   return(feet)
   
 }
@@ -168,62 +168,83 @@ interpolation<-function(centr, feet, coe){
   mapped<-t(mapped)
   
   colnames(mapped[,2:3])<-c("e1", "e2")
+  flag<-0
+  div<-2
   
-  plus<-c(0, 0, 0)
-  
-  for (i in 0:2){
+  for (i in 0:(div-1)){
     
-    for (j in 0:2){
+    for (j in 0:(div-1)){
       
-      check1<-existence(c(i*(d/3), j*(d/3)), c((i+1)*(d/3), (j+1)*(d/3)), mapped)
+      check1<-existence(c(i*(d/div), j*(d/div)), c((i+1)*(d/div), (j+1)*(d/div)), mapped)
       
       if(check1){
         
-        expand1<-c+(((i+1)*(d/3))/2)*e1+(((j+1)*(d/3))/2)*e2
+        expand1<-c+(((i+1)*(d/div))/2)*e1+(((j+1)*(d/div))/2)*e2
         
-        if(length(plus)>3) plus<-rbind(plus, expand1)
-        
-        else plus<-expand1
+        if(flag>0) plus<-rbind(plus, expand1)
+         
+        else{
+          
+          plus<-expand1 
+          flag<-1
+          
+        }
         
       }
       
-      check2<-existence(c(-i*(d/3), j*(d/3)), c(-(i+1)*(d/3), (j+1)*(d/3)), mapped)
+      check2<-existence(c(-i*(d/div), j*(d/div)), c(-(i+1)*(d/div), (j+1)*(d/div)), mapped)
       
       if(check2){
         
-        expand2<-c+((-(i+1)*(d/3))/2)*e1+(((j+1)*(d/3))/2)*e2
+        expand2<-c+((-(i+1)*(d/div))/2)*e1+(((j+1)*(d/div))/2)*e2
         
-        if(length(plus)>3) plus<-rbind(plus, expand2)
-        
-        else plus<-expand2
+        if(flag>0) plus<-rbind(plus, expand2)
+          
+        else{
+          
+          plus<-expand2 
+          flag<-1
+          
+        }
         
       }
       
-      check3<-existence(c(-i*(d/3), -j*(d/3)), c(-(i+1)*(d/3), -(j+1)*(d/3)), mapped)
+      check3<-existence(c(-i*(d/div), -j*(d/div)), c(-(i+1)*(d/div), -(j+1)*(d/div)), mapped)
       
       if(check3){
         
-        expand3<-c+((-(i+1)*(d/3))/2)*e1+((-(j+1)*(d/3))/2)*e2
+        expand3<-c+((-(i+1)*(d/div))/2)*e1+((-(j+1)*(d/div))/2)*e2
         
-        if(length(plus)>3) plus<-rbind(plus, expand3)
+        if(flag>0) plus<-rbind(plus, expand3)
         
-        else plus<-expand3
+        else{
+          
+          plus<-expand3
+          flag<-1
+          
+        }
         
       }
       
-      check4<-existence(c(i*(d/3), -j*(d/3)), c((i+1)*(d/3), -(j+1)*(d/3)), mapped)
+      check4<-existence(c(i*(d/div), -j*(d/div)), c((i+1)*(d/div), -(j+1)*(d/div)), mapped)
       
       if(check4){
         
-        expand4<-c+(((i+1)*(d/3))/2)*e1+((-(j+1)*(d/3))/2)*e2
+        expand4<-c+(((i+1)*(d/div))/2)*e1+((-(j+1)*(d/div))/2)*e2
         
-        if(length(plus)>3) plus<-rbind(plus, expand4)
+        if(flag>0) plus<-rbind(plus, expand4)
+          
         
-        else plus<-expand4
+        else{
+          
+          plus<-expand4
+          flag<-1
+          
+        }
         
       }
       
-      
+      #debugText(plus, flag)
       
     }
     

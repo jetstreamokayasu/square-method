@@ -77,7 +77,7 @@ leastSquares<-function(){
   
   torus.dist<-distance(x)
   
-  intrpo<-rep(0, 3)
+  flag<-0
   
   for (k in 1:length(x[,1])){
     
@@ -93,13 +93,22 @@ leastSquares<-function(){
     feet<-mapping2(vic, k, coe)
     plus<-interpolation(k, feet, coe)
     
-    if(length(intrpo)>3) intrpo<-rbind(intrpo, plus)
+    if(flag>0) intrpo<-rbind(intrpo, plus)
     
-    else intrpo<-plus
+    else{
+      
+      intrpo<-plus
+      flag<-1
+      
+    } 
     
   }
+  
+  return(intrpo)
   
 }
 
 
 intrpo.test<-leastSquares()
+
+points3d(rbind(c(0,0,0), intrpo.test), col="orange")
