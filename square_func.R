@@ -146,7 +146,7 @@ interpolation<-function(centr, feet, coe){
   p<-feet[length(feet[,1]), 2:4]
   r<-p-c
   
-  q[1]<-feet[(length(feet3[,1])%/%2)+1, "x"]
+  q[1]<-feet[(length(feet[,1])%/%2)+1, "x"]
   
   q[2]<-((-q[1])*(r[1]+r[3]*coe[1])+sum(r*c)-r[3]*coe[3])/(r[2]+coe[2]*r[3])
   
@@ -157,7 +157,7 @@ interpolation<-function(centr, feet, coe){
   e2<-(q-c)/sqrt(sum((q-c)^2))
   base<-cbind(e1[1:2], e2[1:2])
   
-  mapped<-sapply(1:length(feet3[,1]), function(l){
+  mapped<-sapply(1:length(feet[,1]), function(l){
     
     k<-solve(base)%*%(feet[l, 2:3]-feet[1, 2:3])
     

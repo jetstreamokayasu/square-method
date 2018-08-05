@@ -112,3 +112,92 @@ leastSquares<-function(){
 intrpo.test<-leastSquares()
 
 points3d(rbind(c(0,0,0), intrpo.test), col="orange")
+
+
+
+leastSquares2<-function(){
+  
+  torus.dist<-distance(x)
+  
+  flag<-0
+  
+  check<-rep(0, length(x[,1]))
+  
+  for (k in 1:length(x[,1])){
+    
+    if(check[k]<=0){
+      
+      plus<-recurSquare(check, k, torus.dist)
+      
+      check<-plus[[2]]
+      
+      if(flag>0) intrpo<-rbind(intrpo, plus[[1]])
+      
+      else{
+        
+        intrpo<-plus[[1]]
+        flag<-1
+        
+      }
+      
+      #debugText(k, plus)
+      
+    }
+    
+  }
+  
+  #debugText(intrpo)
+  
+  return(intrpo)
+  
+}
+  
+
+  
+recurSquare<-function(check, k, torus.dist){
+  
+    flag<-0
+  
+    vic<-get.vicinity(torus.dist, k, 10)
+    vics<-line.vics(k, vic)
+    result<-lm(x[vics, 3]~x[vics, 1]+x[vics, 2])
+    
+    coe<-rep(0, length(coef(result)))
+    coe[1]<-coef(result)[2]
+    coe[2]<-coef(result)[3]
+    coe[3]<-coef(result)[1]
+    
+    feet<-mapping2(vic, k, coe)
+    plus<-interpolation(k, feet, coe)
+    
+    for (m in 1:length(vics)) {
+      
+      if(check[vics[length(vics)-m+1]]<=0){
+        
+        check[vics]<-check[vics]+1
+        
+        add<-recurSquare(check, vics[length(vics)-m+1], torus.dist)
+        
+        flag<-1
+        
+        break
+        
+      }
+      
+    }
+    
+    if(flag==0){
+      
+      check[vics]<-check[vics]+1
+      
+      return(plus)
+      
+    } 
+  
+    else return(list(rbind(plus, add[[1]]), check))
+  
+}
+
+
+intrpo.test2<-leastSquares2()
+points3d(intrpo.test2, col="orange")
