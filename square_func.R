@@ -397,7 +397,7 @@ recurSquare<-function(check, k, torus.dist, stlen, torus){
     
     check[vics]<-check[vics]+1
     
-    return(plus)
+    return(list(plus, check))
     
   } 
   
@@ -488,7 +488,7 @@ interpolation2<-function(centr, feet, coe, stlen){
           
         })
         
-        if(nei2 %in% F){
+        if(F %in% nei2){
         
           expand2<-c+((-(i+1)*(stlen/div))/2)*e1+(((j+1)*(stlen/div))/2)*e2
           
@@ -517,7 +517,9 @@ interpolation2<-function(centr, feet, coe, stlen){
           
         })
         
-        if(nei3 %in% F){
+        #debugText(nei3)
+        
+        if(F %in% nei3){
         
         expand3<-c+((-(i+1)*(stlen/div))/2)*e1+((-(j+1)*(stlen/div))/2)*e2
         
@@ -546,7 +548,7 @@ interpolation2<-function(centr, feet, coe, stlen){
           
           })
         
-        if(nei4 %in% F){
+        if(F %in% nei4){
         
           expand4<-c+(((i+1)*(stlen/div))/2)*e1+((-(j+1)*(stlen/div))/2)*e2
           
