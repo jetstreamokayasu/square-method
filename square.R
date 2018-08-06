@@ -73,40 +73,6 @@ plus3<-interpolation(3, feet3, a3)
 points3d(rbind(c(0,0,0), plus3), col="orange")
 
 
-leastSquares<-function(){
-  
-  torus.dist<-distance(x)
-  
-  flag<-0
-  
-  for (k in 1:length(x[,1])){
-    
-    vic<-get.vicinity(torus.dist, k, 10)
-    vics<-line.vics(k, vic)
-    result<-lm(x[vics, 3]~x[vics, 1]+x[vics, 2])
-    
-    coe<-rep(0, length(coef(result)))
-    coe[1]<-coef(result)[2]
-    coe[2]<-coef(result)[3]
-    coe[3]<-coef(result)[1]
-    
-    feet<-mapping2(vic, k, coe)
-    plus<-interpolation(k, feet, coe)
-    
-    if(flag>0) intrpo<-rbind(intrpo, plus)
-    
-    else{
-      
-      intrpo<-plus
-      flag<-1
-      
-    } 
-    
-  }
-  
-  return(intrpo)
-  
-}
 
 
 intrpo.test<-leastSquares()
@@ -114,90 +80,44 @@ intrpo.test<-leastSquares()
 points3d(rbind(c(0,0,0), intrpo.test), col="orange")
 
 
-
-leastSquares2<-function(){
-  
-  torus.dist<-distance(x)
-  
-  flag<-0
-  
-  check<-rep(0, length(x[,1]))
-  
-  for (k in 1:length(x[,1])){
-    
-    if(check[k]<=0){
-      
-      plus<-recurSquare(check, k, torus.dist)
-      
-      check<-plus[[2]]
-      
-      if(flag>0) intrpo<-rbind(intrpo, plus[[1]])
-      
-      else{
-        
-        intrpo<-plus[[1]]
-        flag<-1
-        
-      }
-      
-      #debugText(k, plus)
-      
-    }
-    
-  }
-  
-  #debugText(intrpo)
-  
-  return(intrpo)
-  
-}
-  
-
-  
-recurSquare<-function(check, k, torus.dist){
-  
-    flag<-0
-  
-    vic<-get.vicinity(torus.dist, k, 10)
-    vics<-line.vics(k, vic)
-    result<-lm(x[vics, 3]~x[vics, 1]+x[vics, 2])
-    
-    coe<-rep(0, length(coef(result)))
-    coe[1]<-coef(result)[2]
-    coe[2]<-coef(result)[3]
-    coe[3]<-coef(result)[1]
-    
-    feet<-mapping2(vic, k, coe)
-    plus<-interpolation(k, feet, coe)
-    
-    for (m in 1:length(vics)) {
-      
-      if(check[vics[length(vics)-m+1]]<=0){
-        
-        check[vics]<-check[vics]+1
-        
-        add<-recurSquare(check, vics[length(vics)-m+1], torus.dist)
-        
-        flag<-1
-        
-        break
-        
-      }
-      
-    }
-    
-    if(flag==0){
-      
-      check[vics]<-check[vics]+1
-      
-      return(plus)
-      
-    } 
-  
-    else return(list(rbind(plus, add[[1]]), check))
-  
-}
-
-
-intrpo.test2<-leastSquares2()
+#データ補間テスト
+intrpo.test2<-leastSquares2(x)
 points3d(intrpo.test2, col="orange")
+
+stlen<-standartLength()
+
+ts.x<-torusUnif(300, 1, 2.5)
+
+plot3d(ts.x)
+aspect3d("iso")
+
+intrpotest.tsx<-leastSquares2(ts.x)
+points3d(intrpotest.tsx, col="orange")
+
+y<-torusUnif(200, 1, 2.5)
+plot3d(y)
+aspect3d("iso")
+
+intrpotest.y<-leastSquares2(y)
+points3d(intrpotest.y, col="orange")
+
+dist.tsx<-distance(ts.x)
+tsxvic3<-get.vicinity(dist.tsx, 3, 10)
+
+for (k in 1:length(ts.x[,1])) {
+  
+  tsvic<-get.vicinity(dist.tsx, k, 10)
+  
+  if(k==1) tsxvic<-tsvic
+  
+  else tsxvic<-rbind(tsxvic, tsvic)
+  
+}
+
+tsxvic121<-get.vicinity(dist.tsx, 121, 10)
+
+# z<-sphereUnif(n = 200, d = 2, r = 1)
+# plot3d(z)
+# aspect3d("iso")
+# intrpotest.z<-leastSquares2(z)
+# points3d(intrpotest.z, col="orange")
