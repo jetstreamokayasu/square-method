@@ -94,6 +94,8 @@ aspect3d("iso")
 intrpotest.tsx<-leastSquares2(ts.x)
 points3d(intrpotest.tsx, col="orange")
 
+diag.tsx<-ripsDiag(rbind(ts.x, intrpotest.tsx), maxdimension = 2, maxscale = 3)
+
 y<-torusUnif(200, 1, 2.5)
 plot3d(y)
 aspect3d("iso")

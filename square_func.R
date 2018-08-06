@@ -259,6 +259,7 @@ mapping2<-function(vic, center, coe, torus){
 # }
 
 #start, endで区切られた範囲にデータ点が存在しするかしないかを判定する関数
+#存在しないとTRUEを返す
 existence<-function(start, end, mapped){
   
   exit.e1<-length((1:length(mapped[,1]))[mapped[,2]>=start[1] & mapped[,2]<end[1]])
@@ -437,6 +438,10 @@ interpolation2<-function(centr, feet, coe, stlen){
   flag<-0
   div<-2
   
+  lat<-stlen/div
+  
+  nei<-rbind(c(0,1), c(1,1), c(1,0), c(1, -1), c(0, -1), c(-1, -1), c(-1, 0), c(1,1))
+  
   for (i in 0:(div-1)){
     
     for (j in 0:(div-1)){
@@ -444,6 +449,17 @@ interpolation2<-function(centr, feet, coe, stlen){
       check1<-existence(c(i*(stlen/div), j*(stlen/div)), c((i+1)*(stlen/div), (j+1)*(stlen/div)), mapped)
       
       if(check1){
+        
+        nei11<-existence(c(i*lat, (j+1)*lat), c((i+1)*lat, (j+2)*lat), mapped)
+        nei12<-existence(c((i+1)*lat, (j+1)*lat), c((i+2)*lat, (j+2)*lat), mapped)
+        nei13<-existence(c((i+1)*lat, j*lat), c((i+2)*lat, (j+1)*lat), mapped)
+        nei14<-existence(c((i+1)*lat, (j-1)*lat), c((i+2)*lat, j*lat), mapped)
+        nei15<-existence(c(i*lat, (j-1)*lat), c((i+1)*lat, j*lat), mapped)
+        nei16<-existence(c((i-1)*lat, (j-1)*lat), c(i*lat, j*lat), mapped)
+        nei17<-existence(c((i-1)*lat, j*lat), c(i*lat, (j+2)*lat), mapped)
+        nei18<-existence(c((i-1)*lat, (j+1)*lat), c(i*lat, (j+2)*lat), mapped)
+        
+        if(!(nei11 && nei12 && nei13 && nei14 && nei15 && nei16 && nei17 && nei18)){
         
         expand1<-c+(((i+1)*(stlen/div))/2)*e1+(((j+1)*(stlen/div))/2)*e2
         
@@ -456,28 +472,52 @@ interpolation2<-function(centr, feet, coe, stlen){
           
         }
         
-      }
-      
-      check2<-existence(c(-i*(stlen/div), j*(stlen/div)), c(-(i+1)*(stlen/div), (j+1)*(stlen/div)), mapped)
-      
-      if(check2){
-        
-        expand2<-c+((-(i+1)*(stlen/div))/2)*e1+(((j+1)*(stlen/div))/2)*e2
-        
-        if(flag>0) plus<-rbind(plus, expand2)
-        
-        else{
-          
-          plus<-expand2 
-          flag<-1
-          
         }
         
       }
       
-      check3<-existence(c(-i*(stlen/div), -j*(stlen/div)), c(-(i+1)*(stlen/div), -(j+1)*(stlen/div)), mapped)
+      check2<-existence(c(-(i+1)*(stlen/div), j*(stlen/div)), c(-i*(stlen/div), (j+1)*(stlen/div)), mapped)
+      
+      if(check2){
+        
+        nei2<-sapply(1:length(nei[,1]), function(p){
+          
+          n2<-existence(c((-(i+1)+nei[p, 1])*lat, (j+nei[p, 2])*lat), c((-i+nei[p, 1])*lat, ((j+1)+nei[p, 2])*lat), mapped)
+          
+          return(n2)
+          
+        })
+        
+        if(nei2 %in% F){
+        
+          expand2<-c+((-(i+1)*(stlen/div))/2)*e1+(((j+1)*(stlen/div))/2)*e2
+          
+          if(flag>0) plus<-rbind(plus, expand2)
+          
+          else{
+            
+            plus<-expand2 
+            flag<-1
+            
+          }
+        
+        }
+        
+      }
+      
+      check3<-existence(c(-(i+1)*(stlen/div), -(j+1)*(stlen/div)), c(-i*(stlen/div), -j*(stlen/div)), mapped)
       
       if(check3){
+        
+        nei3<-sapply(1:length(nei[,1]), function(p){
+          
+          n3<-existence(c((-(i+1)+nei[p,1])*lat, (-(j+1)+nei[p,2])*lat), c((-i+nei[p,1])*lat, (-j+nei[p,2])*lat), mapped)
+          
+          return(n3)
+          
+        })
+        
+        if(nei3 %in% F){
         
         expand3<-c+((-(i+1)*(stlen/div))/2)*e1+((-(j+1)*(stlen/div))/2)*e2
         
@@ -490,22 +530,36 @@ interpolation2<-function(centr, feet, coe, stlen){
           
         }
         
+        }
+        
       }
       
-      check4<-existence(c(i*(stlen/div), -j*(stlen/div)), c((i+1)*(stlen/div), -(j+1)*(stlen/div)), mapped)
+      check4<-existence(c(i*(stlen/div), -(j+1)*(stlen/div)), c((i+1)*(stlen/div), -j*(stlen/div)), mapped)
       
       if(check4){
         
-        expand4<-c+(((i+1)*(stlen/div))/2)*e1+((-(j+1)*(stlen/div))/2)*e2
-        
-        if(flag>0) plus<-rbind(plus, expand4)
-        
-        
-        else{
+        nei4<-sapply(1:length(nei[,1]), function(p){
           
-          plus<-expand4
-          flag<-1
+          n4<-existence(c((i+nei[p,1])*(stlen/div), (-(j+1)+nei[p,2])*(stlen/div)), c(((i+1)+nei[p,1])*(stlen/div), (-j+nei[p,2])*(stlen/div)), mapped)
           
+          return(n4)
+          
+          })
+        
+        if(nei4 %in% F){
+        
+          expand4<-c+(((i+1)*(stlen/div))/2)*e1+((-(j+1)*(stlen/div))/2)*e2
+          
+          if(flag>0) plus<-rbind(plus, expand4)
+          
+          
+          else{
+            
+            plus<-expand4
+            flag<-1
+            
+          }
+        
         }
         
       }
